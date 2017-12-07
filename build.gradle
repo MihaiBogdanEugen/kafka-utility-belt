@@ -7,24 +7,29 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-    argparse4jVersion = '0.8.1'
-    gsonVersion = '2.8.2'
-    kafkaVersion = '1.0.0'
-    scalaVersion = '2.11'
-    slf4jVersion = '1.7.25'
-    zookeeperClientVersion = '0.10'
-    zookeeperVersion = '3.4.10'
-    apachedaVersion = '1.0.0-M33'
-    apachedsVersion = '2.0.0-M21'
-    bcpkixVersion = '1.58'
-    junitVersion = '4.12'
+    apachedaVersion = "1.0.0-M33"
+    apachedsVersion = "2.0.0-M21"
+    argparse4jVersion = "0.8.1"
+    bcpkixVersion = "1.58"
+    gsonVersion = "2.8.2"
+    junitVersion = "4.12"
+    kafkaVersion = "1.0.0"
+    scalaVersion = "2.11"
+    slf4jVersion = "1.7.25"
+    zookeeperClientVersion = "0.10"
+    zookeeperVersion = "3.4.10"
 }
 
 repositories {
     mavenCentral()
     jcenter()
-    maven {
-        url "http://packages.confluent.io/maven/"
-    }
 }
 
+dependencies {
+    compile group: "com.101tec", name: "zkclient", version: zookeeperClientVersion
+    compile group: "com.google.code.gson", name: "gson", version: gsonVersion
+    compile group: "net.sourceforge.argparse4j", name: "argparse4j", version: argparse4jVersion
+    compile group: "org.apache.kafka", name: "kafka-clients", version: kafkaVersion
+    compile group: "org.apache.zookeeper", name: "zookeeper", version: zookeeperVersion
+    compile group: "org.slf4j", name: "slf4j-api", version: slf4jVersion
+}
