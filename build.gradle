@@ -1,0 +1,30 @@
+apply plugin: "java"
+apply plugin: "idea"
+
+group "de.mbe1224.utilities.kafka"
+version "0.0.1"
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ext {
+    argparse4jVersion = '0.8.1'
+    gsonVersion = '2.8.2'
+    kafkaVersion = '1.0.0'
+    scalaVersion = '2.11'
+    slf4jVersion = '1.7.25'
+    zookeeperClientVersion = '0.10'
+    zookeeperVersion = '3.4.10'
+    apachedaVersion = '1.0.0-M33'
+    apachedsVersion = '2.0.0-M21'
+    bcpkixVersion = '1.58'
+    junitVersion = '4.12'
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        url "http://packages.confluent.io/maven/"
+    }
+}
+
