@@ -2,11 +2,13 @@ package de.mbe1224.utils.kafka.infrastructure;
 
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.internals.BrokerSecurityConfigs;
+import org.apache.kafka.common.config.types.Password;
 import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,7 +34,7 @@ import scala.collection.JavaConversions;
  * This class is based on code from
  * src/test/java/io/confluent/support/metrics/common/kafka/EmbeddedKafkaCluster.java
  * at
- * https://github.com/confluentinc/support-metrics-common/support-metrics-common/
+ * https://github.com/confluentinc/support-metrics-common/tree/master/support-metrics-common
  *
  * Starts an embedded Kafka cluster including a backing ZooKeeper ensemble. It adds support for
  * 1. Zookeeper in clustered mode with SASL security
@@ -64,6 +66,10 @@ public class EmbeddedKafkaCluster {
     private EmbeddedZooKeeperEnsemble zookeeper = null;
     private int numBrokers;
     private boolean isRunning = false;
+
+    public EmbeddedKafkaCluster(int numBrokers) throws IOException {
+        this(numBrokers, 1, false);
+    }
 
     public EmbeddedKafkaCluster(int numBrokers, int numZookeeperPeers) throws IOException {
         this(numBrokers, numZookeeperPeers, false);
@@ -271,11 +277,49 @@ public class EmbeddedKafkaCluster {
         }
     }
 
+    public KafkaServer getBroker(int brokerId) {
+        return brokersById.get(brokerId);
+    }
+
     public boolean isRunning() {
         return isRunning;
     }
 
     public String getZookeeperConnectString() {
         return this.zookeeper.connectString();
+    }
+
+    public static void main(String... args) throws IOException {
+
+        if (args.length != 6) {
+            System.err.println("Usage : <command> <num_kafka_brokers> <num_zookeeper_nodes> <sasl_ssl_enabled> <client properties path> <jaas_file> <minikdc_working_dir>");
+            System.exit(1);
+        }
+
+        int numBrokers = Integer.parseInt(args[0]);
+        int numZKNodes = Integer.parseInt(args[1]);
+        boolean isSASLSSLEnabled = Boolean.parseBoolean(args[2]);
+        String clientPropsPath = args[3];
+        String jaasConfigPath = args[4];
+        String miniKDCDir = args[5];
+
+        System.out.println("Starting a " + numBrokers + " node Kafka cluster with " + numZKNodes + " zookeeper nodes.");
+
+        if (isSASLSSLEnabled) {
+            System.out.println("SASL_SSL is enabled. jaas.conf=" + jaasConfigPath);
+            System.out.println("SASL_SSL is enabled. krb.conf=" + miniKDCDir + "/krb.conf");
+        }
+        final EmbeddedKafkaCluster kafka = new EmbeddedKafkaCluster(numBrokers, numZKNodes, isSASLSSLEnabled, jaasConfigPath, miniKDCDir);
+
+        System.out.println("Writing client properties to " + clientPropsPath);
+        Properties props = kafka.getClientSecurityConfig();
+        Password trustStorePassword = (Password) props.get("ssl.truststore.password");
+        props.put("ssl.truststore.password", trustStorePassword.value());
+        props.put("ssl.enabled.protocols", "TLSv1.2");
+        props.store(new FileOutputStream(clientPropsPath), null);
+
+        kafka.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(kafka::shutdown));
     }
 }

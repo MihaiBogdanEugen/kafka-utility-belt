@@ -1,4 +1,4 @@
-package de.mbe1224.utils.kafka.commands;
+package de.mbe1224.utils.kafka.cli;
 
 import de.mbe1224.utils.kafka.ClusterStatus;
 import net.sourceforge.argparse4j.ArgumentParsers;
