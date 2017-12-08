@@ -1,4 +1,4 @@
-package de.mbe1224.utilities.kafka;
+package de.mbe1224.utils.kafka;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -28,7 +28,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Checks status of Zookeeper / Kafka cluster.
+ * Checks status of ZooKeeper or Kafka cluster.
  */
 public class ClusterStatus {
 
@@ -40,38 +40,40 @@ public class ClusterStatus {
     /**
      * Checks if the zookeeper cluster is ready to accept requests.
      *
-     * @param zkConnectString Zookeeper connect string
+     * @param zkConnectString ZooKeeper connect string
      * @param timeoutMs timeoutMs in milliseconds
      * @return true if the cluster is ready, false otherwise.
      */
     public static boolean isZooKeeperReady(String zkConnectString, int timeoutMs) {
-        LOGGER.debug("Check if Zookeeper is ready: {} ", zkConnectString);
+
+        LOGGER.debug("Check if ZooKeeper is ready: {} ", zkConnectString);
         ZooKeeper zookeeper = null;
+        boolean isSASLEnabled = false;
+
         try {
 
             CountDownLatch waitForConnection = new CountDownLatch(1);
-
-            boolean isSASLEnabled = false;
             Object javaSecurityAuthLoginConfig = System.getProperty(JAVA_SECURITY_AUTH_LOGIN_CONFIG, null);
             if (javaSecurityAuthLoginConfig != null) {
                 isSASLEnabled = true;
                 LOGGER.info("SASL is enabled. java.security.auth.login.config={}", javaSecurityAuthLoginConfig);
             }
+
             ZooKeeperConnectionWatcher connectionWatcher = new ZooKeeperConnectionWatcher(waitForConnection, isSASLEnabled);
             zookeeper = new ZooKeeper(zkConnectString, timeoutMs, connectionWatcher);
 
             boolean timedOut = !waitForConnection.await(timeoutMs, TimeUnit.MILLISECONDS);
             if (timedOut) {
-                LOGGER.error("Timed out waiting for connection to Zookeeper server [{}].", zkConnectString);
+                LOGGER.error("Timed out waiting for connection to ZooKeeper server [{}].", zkConnectString);
                 return false;
             } else if (!connectionWatcher.isSuccessful()) {
-                LOGGER.error("Error occurred while connecting to Zookeeper server[{}]. {} ", zkConnectString, connectionWatcher.getFailureMessage());
+                LOGGER.error("Error occurred while connecting to ZooKeeper server[{}]. {} ", zkConnectString, connectionWatcher.getFailureMessage());
                 return false;
             } else {
                 return true;
             }
         } catch (Exception e) {
-            LOGGER.error("Error while waiting for Zookeeper client to connect to the server [{}].", zkConnectString, e);
+            LOGGER.error("Error while waiting for ZooKeeper client to connect to the server [{}].", zkConnectString, e);
             return false;
         } finally {
             cleanupZooKeeper(zookeeper);
@@ -79,8 +81,7 @@ public class ClusterStatus {
     }
 
     /**
-     * Checks if the kafka cluster is accepting client requests and
-     * has at least minBrokerCount brokers.
+     * Checks if the kafka cluster is accepting client requests and has at least minBrokerCount brokers.
      *
      * @param minBrokerCount Expected no of brokers
      * @param timeoutMs timeoutMs in milliseconds
@@ -124,20 +125,20 @@ public class ClusterStatus {
     }
 
     /**
-     * Gets metadata from Zookeeper. This method only waits for at least one broker to be present.
+     * Gets metadata from ZooKeeper. This method only waits for at least one broker to be present.
      *
-     * @param zkConnectString Zookeeper connect string
+     * @param zkConnectString ZooKeeper connect string
      * @param timeoutMs Timeout in milliseconds
      * @return A list of broker metadata with at least one broker.
      */
-    private static List<String> getBrokerMetadataFromZookeeper(String zkConnectString, int timeoutMs)
+    private static List<String> getBrokerMetadataFromZooKeeper(String zkConnectString, int timeoutMs)
             throws KeeperException, InterruptedException, IOException {
-        LOGGER.debug("Get a bootstrap broker from Zookeeper [{}].", zkConnectString);
+        LOGGER.debug("Get a bootstrap broker from ZooKeeper [{}].", zkConnectString);
         ZooKeeper zookeeper = null;
         try {
 
-            zookeeper = createZookeeperClient(zkConnectString, timeoutMs);
-            boolean isBrokerRegisted = isKafkaRegisteredInZookeeper(zookeeper, timeoutMs);
+            zookeeper = createZooKeeperClient(zkConnectString, timeoutMs);
+            boolean isBrokerRegisted = isKafkaRegisteredInZooKeeper(zookeeper, timeoutMs);
 
             if (!isBrokerRegisted) {
                 return Collections.emptyList();
@@ -156,10 +157,10 @@ public class ClusterStatus {
     }
 
     /**
-     * Gets raw Kafka metadata from Zookeeper.
+     * Gets raw Kafka metadata from ZooKeeper.
      *
      * @param timeoutMs timeout in ms.
-     * @param zookeeper Zookeeper client.
+     * @param zookeeper ZooKeeper client.
      * @return List of Kafka metadata strings.
      */
     private static List<String> getRawKafkaMetadataFromZK(ZooKeeper zookeeper, int timeoutMs)
@@ -192,7 +193,7 @@ public class ClusterStatus {
 
         boolean waitForBrokerTimedOut = !waitForBroker.await(timeoutMs, TimeUnit.MILLISECONDS);
         if (waitForBrokerTimedOut) {
-            throw new TimeoutException(String.format("Timed out waiting for Kafka to register brokers in Zookeeper. timeout (ms) = %s", timeoutMs));
+            throw new TimeoutException(String.format("Timed out waiting for Kafka to register brokers in ZooKeeper. timeout (ms) = %s", timeoutMs));
         }
 
         if (brokers.isEmpty()) {
@@ -208,14 +209,14 @@ public class ClusterStatus {
     }
 
     /**
-     * Checks whether /brokers/ids is present. This signifies that at least one Kafka broker has
-     * registered in ZK.
+     * Checks whether /brokers/ids is present.
+     * This signifies that at least one Kafka broker has registered in ZooKeepers.
      *
      * @param timeoutMs timeout in ms.
-     * @param zookeeper Zookeeper client.
+     * @param zookeeper ZooKeeper client.
      * @return True if /brokers/ids is present.
      */
-    private static boolean isKafkaRegisteredInZookeeper(ZooKeeper zookeeper, int timeoutMs)
+    private static boolean isKafkaRegisteredInZooKeeper(ZooKeeper zookeeper, int timeoutMs)
             throws InterruptedException {
         // Make sure /brokers/ids exists. Countdown when one of the following happen:
         // 1. node created event is triggered (this happens when /brokers/ids is created after the
@@ -241,21 +242,20 @@ public class ClusterStatus {
 
         boolean kafkaRegistrationTimedOut = !kafkaRegistrationSignal.await(timeoutMs, TimeUnit.MILLISECONDS);
         if (kafkaRegistrationTimedOut) {
-            throw new TimeoutException(String.format("Timed out waiting for Kafka to create /brokers/ids in Zookeeper. timeout (ms) = %s", timeoutMs));
+            throw new TimeoutException(String.format("Timed out waiting for Kafka to create /brokers/ids in ZooKeeper. timeout (ms) = %s", timeoutMs));
         }
 
         return true;
     }
 
     /**
-     * Create a Zookeeper Client.
+     * Create a ZooKeeper Client.
      *
-     * @param zkConnectString Zookeeper connect string.
+     * @param zkConnectString ZooKeeper connect string.
      * @param timeoutMs timeout in ms.
-     * @return Zookeeper Client.
+     * @return ZooKeeper Client.
      */
-    private static ZooKeeper createZookeeperClient(String zkConnectString, int timeoutMs)
-            throws IOException, InterruptedException {
+    private static ZooKeeper createZooKeeperClient(String zkConnectString, int timeoutMs) throws IOException, InterruptedException {
 
         CountDownLatch waitForConnection = new CountDownLatch(1);
         ZooKeeper zookeeper;
@@ -268,32 +268,32 @@ public class ClusterStatus {
 
         boolean timedOut = !waitForConnection.await(timeoutMs, TimeUnit.MILLISECONDS);
         if (timedOut) {
-            throw new TimeoutException(String.format("Timed out waiting for connection to Zookeeper. timeout(ms) = %s, Zookeeper connect = %s", timeoutMs, zkConnectString));
+            throw new TimeoutException(String.format("Timed out waiting for connection to ZooKeeper. timeout(ms) = %s, ZooKeeper connect = %s", timeoutMs, zkConnectString));
         } else if (!connectionWatcher.isSuccessful()) {
-            throw new RuntimeException(String.format("Error occurred while connecting to Zookeeper server [%s]. %s", zkConnectString, connectionWatcher.getFailureMessage()));
+            throw new RuntimeException(String.format("Error occurred while connecting to ZooKeeper server [%s]. %s", zkConnectString, connectionWatcher.getFailureMessage()));
         }
         return zookeeper;
     }
 
     /**
-     * Gets a kafka endpoint for one broker from Zookeeper. This method is used to get a broker for
+     * Gets a kafka endpoint for one broker from ZooKeeper. This method is used to get a broker for
      * the
      * bootstrap broker list. This method is expected to used in conjunction with isKafkaReady to
      * determine if Kafka is ready.
      *
-     * @param zkConnectString Zookeeper connect string
+     * @param zkConnectString ZooKeeper connect string
      * @param timeoutMs Timeout in milliseconds
      * @return A map of security-protocol->endpoints
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, String> getKafkaEndpointFromZookeeper(String zkConnectString, int timeoutMs)
+    public static Map<String, String> getKafkaEndpointFromZooKeeper(String zkConnectString, int timeoutMs)
             throws InterruptedException, IOException, KeeperException {
 
-        List<String> brokerMetadata = getBrokerMetadataFromZookeeper(zkConnectString, timeoutMs);
+        List<String> brokerMetadata = getBrokerMetadataFromZooKeeper(zkConnectString, timeoutMs);
 
         // Get the first broker. We will use this as the bootstrap broker for isKafkaReady method.
         if (brokerMetadata.isEmpty()) {
-            throw new RuntimeException("No brokers found in Zookeeper [" + zkConnectString + "] .");
+            throw new RuntimeException("No brokers found in ZooKeeper [" + zkConnectString + "] .");
         }
         String broker = brokerMetadata.get(0);
 
@@ -326,7 +326,7 @@ public class ClusterStatus {
             try {
                 zookeeper.close();
             } catch (InterruptedException e) {
-                LOGGER.error("Error while shutting down Zookeeper client.", e);
+                LOGGER.error("Error while shutting down ZooKeeper client.", e);
                 Thread.currentThread().interrupt();
             }
         }

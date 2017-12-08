@@ -1,6 +1,6 @@
-package de.mbe1224.utilities.kafka.cli;
+package de.mbe1224.utils.kafka.commands;
 
-import de.mbe1224.utilities.kafka.ClusterStatus;
+import de.mbe1224.utils.kafka.ClusterStatus;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -13,37 +13,37 @@ import static net.sourceforge.argparse4j.impl.Arguments.store;
 
 /**
  * This command checks if the zookeeper cluster is ready to accept requests.
- * where:
- * <zookeeper_connect>  : Zookeeper connect string
- * <timeout>            : timeout in millisecs for all operations.
+ *
+ * <zookeeper-connect>                          : ZooKeeper connection string
+ * <timeout>                                    : timeout in millisecs for all operations.
  */
 public class ZooKeeperReadyCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZooKeeperReadyCommand.class);
-    private static final String ZK_READY = "zk-ready";
+    private static final String ZOOKEEPER_READY = "zookeeper-ready";
+    private static final String ZOOKEEPER_CONNECT = "zookeeper-connect";
+    private static final String TIMEOUT = "timeout";
 
     private static ArgumentParser createArgsParser() {
-        ArgumentParser zkReady = ArgumentParsers
-                .newFor(ZK_READY)
+
+        ArgumentParser parser = ArgumentParsers
+                .newFor(ZOOKEEPER_READY)
                 .build()
                 .defaultHelp(true)
-                .description("Check if ZK is ready.");
-
-        zkReady.addArgument("zookeeper_connect")
+                .description("Check if ZooKeeper is ready.");
+        parser.addArgument(ZOOKEEPER_CONNECT)
                 .action(store())
                 .required(true)
                 .type(String.class)
-                .metavar("ZOOKEEPER_CONNECT")
-                .help("Zookeeper connect string.");
-
-        zkReady.addArgument("timeout")
+                .metavar(ZOOKEEPER_CONNECT.toUpperCase())
+                .help("ZooKeeper connect string.");
+        parser.addArgument(TIMEOUT)
                 .action(store())
                 .required(true)
                 .type(Integer.class)
-                .metavar("TIMEOUT_IN_MS")
+                .metavar(TIMEOUT.toUpperCase())
                 .help("Time (in ms) to wait for service to be ready.");
-
-        return zkReady;
+        return parser;
     }
 
     public static void main(String[] args) {
@@ -51,9 +51,9 @@ public class ZooKeeperReadyCommand {
         ArgumentParser parser = createArgsParser();
         boolean success;
         try {
-            Namespace res = parser.parseArgs(args);
-            LOGGER.debug("Arguments {}. ", res);
-            success = ClusterStatus.isZooKeeperReady(res.getString("zookeeper_connect"), res.getInt("timeout"));
+            Namespace arguments = parser.parseArgs(args);
+            LOGGER.debug("Arguments {}. ", arguments);
+            success = ClusterStatus.isZooKeeperReady(arguments.getString(ZOOKEEPER_CONNECT), arguments.getInt(TIMEOUT));
         } catch (ArgumentParserException e) {
             if (args.length == 0) {
                 parser.printHelp();
@@ -63,14 +63,10 @@ public class ZooKeeperReadyCommand {
                 success = false;
             }
         } catch (Exception e) {
-            LOGGER.error("Error while running zk-ready {}.", e);
+            LOGGER.error("Error while running {}: {}", ZOOKEEPER_READY, e.getMessage());
             success = false;
         }
 
-        if (success) {
-            System.exit(0);
-        } else {
-            System.exit(1);
-        }
+        System.exit(success ? 0 : 1);
     }
 }
