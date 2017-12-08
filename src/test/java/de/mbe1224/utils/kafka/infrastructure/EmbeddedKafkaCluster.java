@@ -67,6 +67,10 @@ public class EmbeddedKafkaCluster {
     private int numBrokers;
     private boolean isRunning = false;
 
+    public EmbeddedKafkaCluster(int numBrokers) throws IOException {
+        this(numBrokers, 1, false);
+    }
+
     public EmbeddedKafkaCluster(int numBrokers, int numZookeeperPeers) throws IOException {
         this(numBrokers, numZookeeperPeers, false);
     }
@@ -271,6 +275,10 @@ public class EmbeddedKafkaCluster {
             default:
                 throw new RuntimeException(securityProtocol.name() + " is not supported.");
         }
+    }
+
+    public KafkaServer getBroker(int brokerId) {
+        return brokersById.get(brokerId);
     }
 
     public boolean isRunning() {

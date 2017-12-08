@@ -27,6 +27,7 @@ ext {
     gsonVersion = "2.8.2"
     junitVersion = "4.12"
     kafkaVersion = "1.0.0"
+    mockitoVersion = "2.13.0"
     scalaVersion = "2.11"
     slf4jVersion = "1.7.25"
     zookeeperClientVersion = "0.10"
@@ -42,10 +43,11 @@ dependencies {
     compile("com.google.code.gson:gson:${gsonVersion}")
     compile("net.sourceforge.argparse4j:argparse4j:${argparse4jVersion}")
     compile("org.apache.kafka:kafka-clients:${kafkaVersion}")
+    compile("org.apache.kafka:kafka_${scalaVersion}:${kafkaVersion}")
     compile("org.apache.zookeeper:zookeeper:${zookeeperVersion}")
     compile("org.slf4j:slf4j-api:${slf4jVersion}")
-
     testCompile("junit:junit:${junitVersion}")
+
     testCompile("org.apache.directory.api:api-ldap-codec-standalone:${apachedaVersion}")
     testCompile("org.apache.directory.server:apacheds-core-api:${apachedsVersion}")
     testCompile("org.apache.directory.server:apacheds-interceptor-kerberos:${apachedsVersion}")
@@ -60,6 +62,7 @@ dependencies {
     testCompile("org.apache.kafka:kafka_${scalaVersion}:${kafkaVersion}:test")
     testCompile("org.apache.zookeeper:zookeeper:${zookeeperVersion}:tests")
     testCompile("org.bouncycastle:bcpkix-jdk15on:${bcpkixVersion}")
+    testCompile("org.mockito:mockito-core:${mockitoVersion}")
 }
 
 shadowJar {
