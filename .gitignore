@@ -21,7 +21,7 @@
 ### virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml ###
 hs_err_pid*
 
-bin/
+bin/*
 
 ### Gradle ###
 .gradle
@@ -54,3 +54,5 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+!src/test/bin/cli-test.sh
