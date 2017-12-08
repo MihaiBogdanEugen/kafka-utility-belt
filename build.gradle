@@ -1,8 +1,21 @@
+buildscript {
+    ext {
+        shadowVersion = "2.0.1"
+    }
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath("com.github.jengelman.gradle.plugins:shadow:${shadowVersion}")
+    }
+}
+
+apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "java"
 apply plugin: "idea"
 
 group "de.mbe1224.utils.kafka"
-version "0.0.1"
+version "1.0.0"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -47,4 +60,10 @@ dependencies {
     testCompile("org.apache.kafka:kafka_${scalaVersion}:${kafkaVersion}:test")
     testCompile("org.apache.zookeeper:zookeeper:${zookeeperVersion}:tests")
     testCompile("org.bouncycastle:bcpkix-jdk15on:${bcpkixVersion}")
+}
+
+shadowJar {
+    baseName = "kub"
+    classifier = null
+    version = null
 }
