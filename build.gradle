@@ -1,14 +1,14 @@
 apply plugin: "java"
 apply plugin: "idea"
 
-group "de.mbe1224.utilities.kafka"
+group "de.mbe1224.utils.kafka"
 version "0.0.1"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-    apachedaVersion = "1.0.0-M33"
-    apachedsVersion = "2.0.0-M21"
+    apachedaVersion = "1.0.0"
+    apachedsVersion = "2.0.0-M24"
     argparse4jVersion = "0.8.1"
     bcpkixVersion = "1.58"
     gsonVersion = "2.8.2"
@@ -22,14 +22,29 @@ ext {
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
-    compile group: "com.101tec", name: "zkclient", version: zookeeperClientVersion
-    compile group: "com.google.code.gson", name: "gson", version: gsonVersion
-    compile group: "net.sourceforge.argparse4j", name: "argparse4j", version: argparse4jVersion
-    compile group: "org.apache.kafka", name: "kafka-clients", version: kafkaVersion
-    compile group: "org.apache.zookeeper", name: "zookeeper", version: zookeeperVersion
-    compile group: "org.slf4j", name: "slf4j-api", version: slf4jVersion
+    compile("com.101tec:zkclient:${zookeeperClientVersion}")
+    compile("com.google.code.gson:gson:${gsonVersion}")
+    compile("net.sourceforge.argparse4j:argparse4j:${argparse4jVersion}")
+    compile("org.apache.kafka:kafka-clients:${kafkaVersion}")
+    compile("org.apache.zookeeper:zookeeper:${zookeeperVersion}")
+    compile("org.slf4j:slf4j-api:${slf4jVersion}")
+
+    testCompile("junit:junit:${junitVersion}")
+    testCompile("org.apache.directory.api:api-ldap-codec-standalone:${apachedaVersion}")
+    testCompile("org.apache.directory.server:apacheds-core-api:${apachedsVersion}")
+    testCompile("org.apache.directory.server:apacheds-interceptor-kerberos:${apachedsVersion}")
+    testCompile("org.apache.directory.server:apacheds-jdbm-partition:${apachedsVersion}")
+    testCompile("org.apache.directory.server:apacheds-ldif-partition:${apachedsVersion}")
+    testCompile("org.apache.directory.server:apacheds-mavibot-partition:${apachedsVersion}")
+    testCompile("org.apache.directory.server:apacheds-protocol-kerberos:${apachedsVersion}")
+    testCompile("org.apache.directory.server:apacheds-protocol-ldap:${apachedsVersion}")
+    testCompile("org.apache.directory.server:apacheds-protocol-shared:${apachedsVersion}")
+    testCompile("org.apache.kafka:kafka-clients:${kafkaVersion}:test")
+    testCompile("org.apache.kafka:kafka_${scalaVersion}:${kafkaVersion}")
+    testCompile("org.apache.kafka:kafka_${scalaVersion}:${kafkaVersion}:test")
+    testCompile("org.apache.zookeeper:zookeeper:${zookeeperVersion}:tests")
+    testCompile("org.bouncycastle:bcpkix-jdk15on:${bcpkixVersion}")
 }
