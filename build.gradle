@@ -1,41 +1,49 @@
 buildscript {
     ext {
         shadowVersion = "2.0.1"
+        junitVersion = "1.0.2"
     }
     repositories {
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath("com.github.jengelman.gradle.plugins:shadow:${shadowVersion}")
+        classpath("org.junit.platform:junit-platform-gradle-plugin:${junitVersion}")
     }
 }
 
-apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "java"
 apply plugin: "idea"
+apply plugin: "org.junit.platform.gradle.plugin"
+apply plugin: "com.github.johnrengelman.shadow"
 
 group "de.mbe1224.utils.kafka"
 version "1.0.0"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
 ext {
     apachedaVersion = "1.0.0"
     apachedsVersion = "2.0.0-M24"
+    apiguardianVersion = "1.0.0"
     argparse4jVersion = "0.8.1"
     bcpkixVersion = "1.58"
     gsonVersion = "2.8.2"
-    junitVersion = "4.12"
+    junit4Version = "4.12"
+    junitJupiterVersion = "5.0.2"
+    junitVintageVersion = "4.12.2"
     kafkaVersion = "1.0.0"
     mockitoVersion = "2.13.0"
     scalaVersion = "2.11"
     slf4jVersion = "1.7.25"
     zookeeperClientVersion = "0.10"
     zookeeperVersion = "3.4.10"
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
@@ -46,8 +54,7 @@ dependencies {
     compile("org.apache.kafka:kafka_${scalaVersion}:${kafkaVersion}")
     compile("org.apache.zookeeper:zookeeper:${zookeeperVersion}")
     compile("org.slf4j:slf4j-api:${slf4jVersion}")
-    testCompile("junit:junit:${junitVersion}")
-
+    testCompile("junit:junit:${junit4Version}")
     testCompile("org.apache.directory.api:api-ldap-codec-standalone:${apachedaVersion}")
     testCompile("org.apache.directory.server:apacheds-core-api:${apachedsVersion}")
     testCompile("org.apache.directory.server:apacheds-interceptor-kerberos:${apachedsVersion}")
@@ -62,11 +69,23 @@ dependencies {
     testCompile("org.apache.kafka:kafka_${scalaVersion}:${kafkaVersion}:test")
     testCompile("org.apache.zookeeper:zookeeper:${zookeeperVersion}:tests")
     testCompile("org.bouncycastle:bcpkix-jdk15on:${bcpkixVersion}")
+    testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
     testCompile("org.mockito:mockito-core:${mockitoVersion}")
+    testCompileOnly("org.apiguardian:apiguardian-api:${apiguardianVersion}")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+    testRuntime("org.junit.vintage:junit-vintage-engine:${junitVintageVersion}")
 }
 
 shadowJar {
     baseName = "kub"
     classifier = null
-    version = null
+}
+
+junitPlatform {
+    enableStandardTestTask true
+}
+
+task wrapper(type: Wrapper) {
+    description = "Generates gradlew[.bat] scripts"
+    gradleVersion = "4.3.1"
 }

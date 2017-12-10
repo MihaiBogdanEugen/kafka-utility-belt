@@ -55,13 +55,7 @@ public class ZooKeeperReadyCommand {
             LOGGER.debug("Arguments {}. ", arguments);
             success = ClusterStatus.isZooKeeperReady(arguments.getString(ZOOKEEPER_CONNECT), arguments.getInt(TIMEOUT));
         } catch (ArgumentParserException e) {
-            if (args.length == 0) {
-                parser.printHelp();
-                success = true;
-            } else {
-                parser.handleError(e);
-                success = false;
-            }
+            success = BaseReadyCommand.handleParserExcepiton(args, parser, e);
         } catch (Exception e) {
             LOGGER.error("Error while running {}: {}", ZOOKEEPER_READY, e.getMessage());
             success = false;

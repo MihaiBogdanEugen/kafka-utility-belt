@@ -67,10 +67,6 @@ public class EmbeddedKafkaCluster {
     private int numBrokers;
     private boolean isRunning = false;
 
-    public EmbeddedKafkaCluster(int numBrokers) throws IOException {
-        this(numBrokers, 1, false);
-    }
-
     public EmbeddedKafkaCluster(int numBrokers, int numZookeeperPeers) throws IOException {
         this(numBrokers, numZookeeperPeers, false);
     }
@@ -80,7 +76,7 @@ public class EmbeddedKafkaCluster {
         this(numBrokers, numZookeeperPeers, enableSASLSSL, null, null);
     }
 
-    public EmbeddedKafkaCluster(int numBrokers, int numZookeeperPeers, boolean enableSASLSSL, String jaasFilePath, String miniKDCDir)
+    private EmbeddedKafkaCluster(int numBrokers, int numZookeeperPeers, boolean enableSASLSSL, String jaasFilePath, String miniKDCDir)
             throws IOException {
         this.enableSASLSSL = enableSASLSSL;
 
@@ -121,7 +117,7 @@ public class EmbeddedKafkaCluster {
             brokerSaslProperties = Option.apply(saslProperties);
         }
 
-        zookeeper = new EmbeddedZooKeeperEnsemble(numZookeeperPeers);
+        zookeeper = new EmbeddedZooKeeperEnsemble(numZookeeperPeers, 11111);
     }
 
     private String createJAASFile() throws IOException {
@@ -277,9 +273,9 @@ public class EmbeddedKafkaCluster {
         }
     }
 
-    public KafkaServer getBroker(int brokerId) {
-        return brokersById.get(brokerId);
-    }
+//    public KafkaServer getBroker(int brokerId) {
+//        return brokersById.get(brokerId);
+//    }
 
     public boolean isRunning() {
         return isRunning;

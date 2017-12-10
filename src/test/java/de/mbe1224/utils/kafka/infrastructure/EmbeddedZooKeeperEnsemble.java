@@ -5,7 +5,6 @@ import org.apache.zookeeper.server.quorum.Election;
 import org.apache.zookeeper.server.quorum.QuorumPeer;
 import org.apache.zookeeper.test.ClientBase;
 import org.apache.zookeeper.test.JMXEnv;
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +18,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 /**
  * This class is based on code from Apache Zookeeper unit tests listed below.
  *
@@ -30,14 +33,10 @@ public class EmbeddedZooKeeperEnsemble {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedZooKeeperEnsemble.class);
     private final Map<Integer, QuorumPeer> quorumPeersById = new ConcurrentHashMap<>();
-    private int basePort = 11111;
+    private int basePort;
     private String hostPort = "";
     private boolean isRunning = false;
     private int numNodes;
-
-    public EmbeddedZooKeeperEnsemble(int numNodes) throws IOException {
-        this(numNodes, 11111);
-    }
 
     public EmbeddedZooKeeperEnsemble(int numNodes, int basePort) throws IOException {
         this.numNodes = numNodes;
@@ -64,7 +63,7 @@ public class EmbeddedZooKeeperEnsemble {
             int portClient = basePort++;
             LOGGER.info("creating QuorumPeer " + i + " port " + portClient);
             QuorumPeer s = new QuorumPeer(peers, dir, dir, portClient, 3, i, 2000, 3, 3);
-            Assert.assertEquals(portClient, s.getClientPort());
+            assertEquals(portClient, s.getClientPort());
 
             quorumPeersById.put(i, s);
 
@@ -94,7 +93,7 @@ public class EmbeddedZooKeeperEnsemble {
 
         for (String hp : hostPort.split(",")) {
             int connectionTimeout = 30000;
-            Assert.assertTrue("waiting for server up", ClientBase.waitForServerUp(hp, connectionTimeout));
+            assertTrue(ClientBase.waitForServerUp(hp, connectionTimeout), "waiting for server up");
             LOGGER.info(hp + " is accepting client connections");
             try {
                 LOGGER.info(sendStat(hp, connectionTimeout));
@@ -154,7 +153,7 @@ public class EmbeddedZooKeeperEnsemble {
         String[] hostPorts = this.hostPort.split(",");
 
         for (String hp : hostPorts) {
-            Assert.assertTrue("waiting for server down", ClientBase.waitForServerDown(hp, (long) ClientBase.CONNECTION_TIMEOUT));
+            assertTrue(ClientBase.waitForServerDown(hp, (long) ClientBase.CONNECTION_TIMEOUT), "waiting for server down");
             LOGGER.info(hp + " is no longer accepting client connections");
         }
 
@@ -177,7 +176,7 @@ public class EmbeddedZooKeeperEnsemble {
             LOGGER.info("Waiting for " + qp.getName() + " to exit thread");
             qp.join(30000L);
             if (qp.isAlive()) {
-                Assert.fail("QP failed to shutdown in 30 seconds: " + qp.getName());
+                fail("QP failed to shutdown in 30 seconds: " + qp.getName());
             }
         } catch (InterruptedException var2) {
             LOGGER.debug("QP interrupted: " + qp.getName(), var2);
