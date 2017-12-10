@@ -17,12 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -76,7 +71,7 @@ public class ClusterStatus {
             LOGGER.error("Error while waiting for ZooKeeper client to connect to the server [{}].", zkConnectString, e);
             return false;
         } finally {
-            cleanupZooKeeper(zookeeper);
+            cleanupZooKeeperClient(zookeeper);
         }
     }
 
@@ -131,8 +126,7 @@ public class ClusterStatus {
      * @param timeoutMs Timeout in milliseconds
      * @return A list of broker metadata with at least one broker.
      */
-    private static List<String> getBrokerMetadataFromZooKeeper(String zkConnectString, int timeoutMs)
-            throws KeeperException, InterruptedException, IOException {
+    private static List<String> getBrokerMetadataFromZooKeeper(String zkConnectString, int timeoutMs) throws KeeperException, InterruptedException, IOException {
         LOGGER.debug("Get a bootstrap broker from ZooKeeper [{}].", zkConnectString);
         ZooKeeper zookeeper = null;
         try {
@@ -152,7 +146,7 @@ public class ClusterStatus {
             }
             return brokerMetadata;
         } finally {
-            cleanupZooKeeper(zookeeper);
+            cleanupZooKeeperClient(zookeeper);
         }
     }
 
@@ -163,8 +157,7 @@ public class ClusterStatus {
      * @param zookeeper ZooKeeper client.
      * @return List of Kafka metadata strings.
      */
-    private static List<String> getRawKafkaMetadataFromZK(ZooKeeper zookeeper, int timeoutMs)
-            throws InterruptedException, KeeperException {
+    private static List<String> getRawKafkaMetadataFromZK(ZooKeeper zookeeper, int timeoutMs) throws InterruptedException, KeeperException {
         // Get the data.
         final CountDownLatch waitForBroker = new CountDownLatch(1);
 
@@ -216,13 +209,12 @@ public class ClusterStatus {
      * @param zookeeper ZooKeeper client.
      * @return True if /brokers/ids is present.
      */
-    private static boolean isKafkaRegisteredInZooKeeper(ZooKeeper zookeeper, int timeoutMs)
-            throws InterruptedException {
+    private static boolean isKafkaRegisteredInZooKeeper(ZooKeeper zookeeper, int timeoutMs) throws InterruptedException {
+
         // Make sure /brokers/ids exists. Countdown when one of the following happen:
-        // 1. node created event is triggered (this happens when /brokers/ids is created after the
-        // call is made).
-        // 2. StatCallback gets a non-null callback (this happens when /brokers/ids exists when the
-        // call is made) .
+        // 1. node created event is triggered (this happens when /brokers/ids is created after the call is made).
+        // 2. StatCallback gets a non-null callback (this happens when /brokers/ids exists when the call is made) .
+
         final CountDownLatch kafkaRegistrationSignal = new CountDownLatch(1);
 
         Watcher watcher = event -> {
@@ -231,14 +223,14 @@ public class ClusterStatus {
                 kafkaRegistrationSignal.countDown();
             }
         };
-        StatCallback cb = (rc, path, ctx, stat) -> {
+        StatCallback callback = (rc, path, ctx, stat) -> {
             LOGGER.debug("StatsCallback got data for path={}, stat={}", path, stat);
             if (stat != null) {
                 kafkaRegistrationSignal.countDown();
             }
         };
 
-        zookeeper.exists(BROKERS_IDS_PATH, watcher, cb, null);
+        zookeeper.exists(BROKERS_IDS_PATH, watcher, callback, null);
 
         boolean kafkaRegistrationTimedOut = !kafkaRegistrationSignal.await(timeoutMs, TimeUnit.MILLISECONDS);
         if (kafkaRegistrationTimedOut) {
@@ -249,7 +241,7 @@ public class ClusterStatus {
     }
 
     /**
-     * Create a ZooKeeper Client.
+     * Creates a ZooKeeper Client.
      *
      * @param zkConnectString ZooKeeper connect string.
      * @param timeoutMs timeout in ms.
@@ -286,8 +278,7 @@ public class ClusterStatus {
      * @return A map of security-protocol->endpoints
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, String> getKafkaEndpointFromZooKeeper(String zkConnectString, int timeoutMs)
-            throws InterruptedException, IOException, KeeperException {
+    public static Map<String, String> getKafkaEndpointFromZooKeeper(String zkConnectString, int timeoutMs) throws InterruptedException, IOException, KeeperException {
 
         List<String> brokerMetadata = getBrokerMetadataFromZooKeeper(zkConnectString, timeoutMs);
 
@@ -321,7 +312,12 @@ public class ClusterStatus {
         }
     }
 
-    private static void cleanupZooKeeper(ZooKeeper zookeeper) {
+    /**
+     * Closes a ZooKeeper client.
+     *
+     * @param zookeeper ZooKeeper Client
+     */
+    private static void cleanupZooKeeperClient(ZooKeeper zookeeper) {
         if (zookeeper != null) {
             try {
                 zookeeper.close();

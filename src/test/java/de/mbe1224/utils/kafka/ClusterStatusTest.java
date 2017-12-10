@@ -17,23 +17,23 @@ import static org.junit.Assert.fail;
 
 public class ClusterStatusTest {
 
-    private static EmbeddedKafkaCluster KAFKA;
+    private static EmbeddedKafkaCluster KafkaCluster;
 
     @BeforeClass
     public static void setup() throws IOException {
-        KAFKA = new EmbeddedKafkaCluster(3, 3);
-        KAFKA.start();
+        KafkaCluster = new EmbeddedKafkaCluster(3, 3);
+        KafkaCluster.start();
     }
 
     @AfterClass
     public static void tearDown() {
-        KAFKA.shutdown();
+        KafkaCluster.shutdown();
     }
 
     @Test(timeout = 120000)
     public void zookeeperReady() {
         try {
-            assertTrue(ClusterStatus.isZooKeeperReady(KAFKA.getZookeeperConnectString(), 10000));
+            assertTrue(ClusterStatus.isZooKeeperReady(KafkaCluster.getZookeeperConnectString(), 10000));
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -54,7 +54,7 @@ public class ClusterStatusTest {
     public void isKafkaReady() {
         try {
             Map<String, String> config = new HashMap<>();
-            config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, KAFKA.getBootstrapBroker(SecurityProtocol.PLAINTEXT));
+            config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, KafkaCluster.getBootstrapBroker(SecurityProtocol.PLAINTEXT));
             assertTrue(ClusterStatus.isKafkaReady(config, 3, 10000));
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,7 +66,7 @@ public class ClusterStatusTest {
     public void isKafkaReadyFailWithLessBrokers() {
         try {
             Map<String, String> config = new HashMap<>();
-            config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, KAFKA.getBootstrapBroker(SecurityProtocol.PLAINTEXT));
+            config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, KafkaCluster.getBootstrapBroker(SecurityProtocol.PLAINTEXT));
             assertFalse(ClusterStatus.isKafkaReady(config, 5, 10000));
         } catch (Exception e) {
             e.printStackTrace();
