@@ -79,11 +79,9 @@ dependencies {
 shadowJar {
     baseName = "kub"
     classifier = null
-    version = null
 }
 
 junitPlatform {
-    logManager "org.apache.logging.log4j.jul.LogManager"
     enableStandardTestTask true
 }
 
