@@ -61,7 +61,7 @@ public class ClusterStatus {
             if (timedOut) {
                 LOGGER.error("Timed out waiting for connection to ZooKeeper server [{}].", zkConnectString);
                 return false;
-            } else if (!connectionWatcher.isSuccessful()) {
+            } else if (connectionWatcher.isFailed()) {
                 LOGGER.error("Error occurred while connecting to ZooKeeper server[{}]. {} ", zkConnectString, connectionWatcher.getFailureMessage());
                 return false;
             } else {
@@ -261,7 +261,7 @@ public class ClusterStatus {
         boolean timedOut = !waitForConnection.await(timeoutMs, TimeUnit.MILLISECONDS);
         if (timedOut) {
             throw new TimeoutException(String.format("Timed out waiting for connection to ZooKeeper. timeout(ms) = %s, ZooKeeper connect = %s", timeoutMs, zkConnectString));
-        } else if (!connectionWatcher.isSuccessful()) {
+        } else if (connectionWatcher.isFailed()) {
             throw new RuntimeException(String.format("Error occurred while connecting to ZooKeeper server [%s]. %s", zkConnectString, connectionWatcher.getFailureMessage()));
         }
         return zookeeper;

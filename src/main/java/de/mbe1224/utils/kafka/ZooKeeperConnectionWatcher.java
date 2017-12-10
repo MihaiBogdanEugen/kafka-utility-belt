@@ -22,13 +22,13 @@ public class ZooKeeperConnectionWatcher implements Watcher {
     private String failureMessage = null;
     private boolean isSASLEnabled;
 
-    public ZooKeeperConnectionWatcher(CountDownLatch connectSignal, boolean isSASLEnabled) {
+    ZooKeeperConnectionWatcher(CountDownLatch connectSignal, boolean isSASLEnabled) {
         this.connectSignal = connectSignal;
         this.isSASLEnabled = isSASLEnabled;
     }
 
-    boolean isSuccessful() {
-        return isSuccessful;
+    boolean isFailed() {
+        return !isSuccessful;
     }
 
     public String getFailureMessage() {

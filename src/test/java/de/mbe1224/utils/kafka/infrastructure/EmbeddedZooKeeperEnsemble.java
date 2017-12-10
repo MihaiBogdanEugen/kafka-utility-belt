@@ -30,14 +30,10 @@ public class EmbeddedZooKeeperEnsemble {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedZooKeeperEnsemble.class);
     private final Map<Integer, QuorumPeer> quorumPeersById = new ConcurrentHashMap<>();
-    private int basePort = 11111;
+    private int basePort;
     private String hostPort = "";
     private boolean isRunning = false;
     private int numNodes;
-
-    public EmbeddedZooKeeperEnsemble(int numNodes) throws IOException {
-        this(numNodes, 11111);
-    }
 
     public EmbeddedZooKeeperEnsemble(int numNodes, int basePort) throws IOException {
         this.numNodes = numNodes;

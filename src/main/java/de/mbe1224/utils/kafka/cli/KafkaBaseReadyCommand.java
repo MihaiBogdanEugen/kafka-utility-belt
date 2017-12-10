@@ -26,9 +26,9 @@ import static net.sourceforge.argparse4j.impl.Arguments.store;
  * (<bootstrap-brokers> or <zookeeper-connect>) : Either a bootstrap broker list or ZooKeeper connection string
  * <security-protocol>                          : Security protocol to use to connect to the broker.
  */
-public class KafkaReadyCommand {
+public class KafkaBaseReadyCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaReadyCommand.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaBaseReadyCommand.class);
     private static final String KAFKA_READY = "kafka-ready";
     private static final String MIN_EXPECTED_BROKERS = "min-expected-brokers";
     private static final String ZOOKEEPER_CONNECT = "zookeeper-connect";
@@ -129,13 +129,7 @@ public class KafkaReadyCommand {
             }
 
         } catch (ArgumentParserException e) {
-            if (args.length == 0) {
-                parser.printHelp();
-                success = true;
-            } else {
-                parser.handleError(e);
-                success = false;
-            }
+            success = BaseReadyCommand.handleParserExcepiton(args, parser, e);
         } catch (Exception e) {
             LOGGER.error("Error while running {}: {}", KAFKA_READY, e.getMessage());
             success = false;

@@ -105,7 +105,7 @@ public class ClusterWaitTest {
 
             Map<String, String> endpoints = ClusterStatus.getKafkaEndpointFromZooKeeper(kafkaWait.getZookeeperConnectString(),30000);
 
-            String bootstrap_broker = endpoints.get("PLAINTEXT");
+            String bootstrap_broker = endpoints.get(CommonClientConfigs.DEFAULT_SECURITY_PROTOCOL);
             Map<String, String> config = new HashMap<>();
             config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrap_broker);
 
