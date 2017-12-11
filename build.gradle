@@ -35,6 +35,7 @@ ext {
     argparse4jVersion = "0.8.1"
     bcpkixVersion = "1.58"
     gsonVersion = "2.8.2"
+    jacksonVersion = "2.9.3"
     junit4Version = "4.12"
     junitJupiterVersion = "5.0.2"
     junitVintageVersion = "4.12.2"
@@ -48,6 +49,8 @@ ext {
 
 dependencies {
     compile("com.101tec:zkclient:${zookeeperClientVersion}")
+    compile("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonVersion}")
+    compile("com.fasterxml.jackson.dataformat:jackson-databind:${jacksonVersion}")
     compile("com.google.code.gson:gson:${gsonVersion}")
     compile("net.sourceforge.argparse4j:argparse4j:${argparse4jVersion}")
     compile("org.apache.kafka:kafka-clients:${kafkaVersion}")

@@ -129,7 +129,7 @@ public class KafkaReadyCommand {
             }
 
         } catch (ArgumentParserException e) {
-            success = BaseReadyCommand.handleParserExcepiton(args, parser, e);
+            success = BaseCliCommand.handleParserExcepiton(args, parser, e);
         } catch (Exception e) {
             LOGGER.error("Error while running {}: {}", KAFKA_READY, e.getMessage());
             success = false;

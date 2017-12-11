@@ -1,6 +1,5 @@
 package de.mbe1224.utils;
 
-import de.mbe1224.utils.ClusterStatus;
 import de.mbe1224.utils.infrastructure.EmbeddedKafkaCluster;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.common.security.auth.SecurityProtocol;

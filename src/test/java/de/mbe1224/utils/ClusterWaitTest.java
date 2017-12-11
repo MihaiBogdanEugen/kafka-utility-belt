@@ -1,13 +1,11 @@
 package de.mbe1224.utils;
 
-import de.mbe1224.utils.ClusterStatus;
 import de.mbe1224.utils.infrastructure.EmbeddedKafkaCluster;
 import de.mbe1224.utils.infrastructure.EmbeddedZooKeeperEnsemble;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ClusterWaitTest {
 
     @Test
-    void isZookeeperReadyWait() throws IOException, InterruptedException {
+    void isZookeeperReadyWait() {
         assertTimeoutPreemptively(ofMillis(180000), () -> {
             final EmbeddedZooKeeperEnsemble zookeeperWait = new EmbeddedZooKeeperEnsemble(3, 22222);
             Thread zkClusterThread = new Thread(() -> {
@@ -50,7 +48,7 @@ class ClusterWaitTest {
     }
 
     @Test
-    void isKafkaReadyWait() throws Exception {
+    void isKafkaReadyWait() {
         assertTimeoutPreemptively(ofMillis(180000), () -> {
             final EmbeddedKafkaCluster kafkaWait = new EmbeddedKafkaCluster(3, 3);
 
@@ -85,7 +83,7 @@ class ClusterWaitTest {
     }
 
     @Test
-    void isKafkaReadyWaitUsingZooKeeper() throws Exception {
+    void isKafkaReadyWaitUsingZooKeeper() {
         assertTimeoutPreemptively(ofMillis(180000), () -> {
             final EmbeddedKafkaCluster kafkaWait = new EmbeddedKafkaCluster(3, 3);
 
