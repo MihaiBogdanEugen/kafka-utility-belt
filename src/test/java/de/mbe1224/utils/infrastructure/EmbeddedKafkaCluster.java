@@ -1,8 +1,9 @@
 package de.mbe1224.utils.infrastructure;
 
 import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.internals.BrokerSecurityConfigs;
 import org.apache.kafka.common.config.types.Password;
-import org.apache.kafka.common.protocol.SecurityProtocol;
+import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +102,7 @@ public class EmbeddedKafkaCluster {
 
             saslProperties = new Properties();
             saslProperties.put(SaslConfigs.SASL_MECHANISM, "GSSAPI");
-            saslProperties.put("sasl.enabled.mechanisms", "GSSAPI");
+            saslProperties.put(BrokerSecurityConfigs.SASL_ENABLED_MECHANISMS_CONFIG, "GSSAPI");
 
             this.brokerTrustStoreFile = Option.apply(trustStoreFile);
             brokerSaslProperties = Option.apply(saslProperties);
@@ -234,7 +235,7 @@ public class EmbeddedKafkaCluster {
             throw new IllegalArgumentException("broker id must not be negative");
         }
 
-        Properties props = TestUtils.createBrokerConfig(brokerId, zkConnectString, ENABLE_CONTROLLED_SHUTDOWN, ENABLE_DELETE_TOPIC, BROKER_PORT_BASE + brokerId, INTER_BROKER_SECURITY_PROTOCOL, this.brokerTrustStoreFile, brokerSaslProperties, ENABLE_PLAINTEXT, ENABLE_SASL_PLAINTEXT, SASL_PLAINTEXT_PORT, ENABLE_SSL, SSL_PORT, this.enableSASLSSL, SASL_SSL_PORT_BASE + brokerId, Option.empty());
+        Properties props = TestUtils.createBrokerConfig(brokerId, zkConnectString, ENABLE_CONTROLLED_SHUTDOWN, ENABLE_DELETE_TOPIC, BROKER_PORT_BASE + brokerId, INTER_BROKER_SECURITY_PROTOCOL, this.brokerTrustStoreFile, brokerSaslProperties, ENABLE_PLAINTEXT, ENABLE_SASL_PLAINTEXT, SASL_PLAINTEXT_PORT, ENABLE_SSL, SSL_PORT, this.enableSASLSSL, SASL_SSL_PORT_BASE + brokerId, Option.empty(), 1);
 
         KafkaServer broker = TestUtils.createServer(KafkaConfig.fromProps(props), new MockTime());
         brokersById.put(brokerId, broker);
