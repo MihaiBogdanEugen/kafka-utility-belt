@@ -19,7 +19,7 @@ apply plugin: "org.junit.platform.gradle.plugin"
 apply plugin: "com.github.johnrengelman.shadow"
 
 group "de.mbe1224.utils.kafka"
-version "0.11.0.1"
+version "0.11.0.2"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -40,7 +40,7 @@ ext {
     junit4Version = "4.12"
     junitJupiterVersion = "5.0.2"
     junitVintageVersion = "4.12.2"
-    kafkaVersion = "0.11.0.1"
+    kafkaVersion = "0.11.0.2"
     mockitoVersion = "2.13.0"
     scalaVersion = "2.11"
     slf4jVersion = "1.7.25"
