@@ -1,4 +1,4 @@
-package de.mbe1224.utils.kafka.infrastructure;
+package de.mbe1224.utils.infrastructure;
 
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.internals.BrokerSecurityConfigs;
@@ -31,16 +31,7 @@ import scala.Option$;
 import scala.collection.JavaConversions;
 
 /**
- * This class is based on code from
- * src/test/java/io/confluent/support/metrics/common/kafka/EmbeddedKafkaCluster.java
- * at
- * https://github.com/confluentinc/support-metrics-common/tree/master/support-metrics-common
- *
- * Starts an embedded Kafka cluster including a backing ZooKeeper ensemble. It adds support for
- * 1. Zookeeper in clustered mode with SASL security
- * 2. Kafka with SASL_SSL security
- * <p>
- * This class should be used for unit/integration testing only.
+ * Starts an embedded Kafka cluster including a backing ZooKeeper ensemble. It adds support for Zookeeper, in clustered mode with SASL security and for Kafka, with SASL_SSL security
  */
 public class EmbeddedKafkaCluster {
 

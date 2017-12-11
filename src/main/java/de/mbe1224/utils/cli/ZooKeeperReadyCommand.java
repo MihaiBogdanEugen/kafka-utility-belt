@@ -1,6 +1,6 @@
-package de.mbe1224.utils.kafka.cli;
+package de.mbe1224.utils.cli;
 
-import de.mbe1224.utils.kafka.ClusterStatus;
+import de.mbe1224.utils.ClusterStatus;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -55,7 +55,7 @@ public class ZooKeeperReadyCommand {
             LOGGER.debug("Arguments {}. ", arguments);
             success = ClusterStatus.isZooKeeperReady(arguments.getString(ZOOKEEPER_CONNECT), arguments.getInt(TIMEOUT));
         } catch (ArgumentParserException e) {
-            success = BaseReadyCommand.handleParserExcepiton(args, parser, e);
+            success = BaseCliCommand.handleParserExcepiton(args, parser, e);
         } catch (Exception e) {
             LOGGER.error("Error while running {}: {}", ZOOKEEPER_READY, e.getMessage());
             success = false;

@@ -1,4 +1,4 @@
-package de.mbe1224.utils.kafka;
+package de.mbe1224.utils;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;

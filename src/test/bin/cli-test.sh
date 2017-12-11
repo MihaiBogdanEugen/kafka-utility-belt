@@ -4,7 +4,7 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-ps ax | grep -i 'de.mbe1224.utils.kafka.infrastructure.EmbeddedKafkaCluster' | grep -v grep | awk '{print $1}' | xargs kill -SIGTERM
+ps ax | grep -i 'de.mbe1224.utils.infrastructure.EmbeddedKafkaCluster' | grep -v grep | awk '{print $1}' | xargs kill -SIGTERM
 
 ./gradlew clean build shadowJar
 
@@ -14,7 +14,7 @@ export MINI_KDC_DIR=/tmp/minikdc
 rm -rf "$MINI_KDC_DIR" && mkdir -p "$MINI_KDC_DIR"
 
 java -cp build/libs/kub.jar \
-    de.mbe1224.utils.kafka.infrastructure.EmbeddedKafkaCluster \
+    de.mbe1224.utils.infrastructure.EmbeddedKafkaCluster \
     3 \
     3 \
     true \
@@ -32,7 +32,7 @@ echo "Kafka : $KAFKA_PID"
 java -Djava.security.auth.login.config="$JAAS_CONF" \
      -Djava.security.krb5.conf="$MINI_KDC_DIR/krb5.conf" \
      -cp build/libs/kub.jar \
-     de.mbe1224.utils.kafka.infrastructure.cli.ZooKeeperReadyCommand \
+     de.mbe1224.utils.infrastructure.cli.ZooKeeperReadyCommand \
      localhost:11117 \
      30000 &> /tmp/test-zookeeper-ready.log
 
@@ -41,7 +41,7 @@ ZOOKEEPER_TEST=$([ $? -eq 0 ] && echo "PASS" || echo "FAIL")
 java -Djava.security.auth.login.config="$JAAS_CONF" \
      -Djava.security.krb5.conf="$MINI_KDC_DIR/krb5.conf" \
      -cp build/libs/kub.jar \
-     de.mbe1224.utils.kafka.infrastructure.cli.KafkaReadyCommand \
+     de.mbe1224.utils.infrastructure.cli.KafkaReadyCommand \
      3 \
      30000 \
      -b localhost:49092 \
@@ -52,7 +52,7 @@ KAFKA_BROKER_OPTION_TEST=$([ $? -eq 0 ] && echo "PASS" || echo "FAIL")
 java -Djava.security.auth.login.config="$JAAS_CONF" \
      -Djava.security.krb5.conf="$MINI_KDC_DIR/krb5.conf" \
      -cp build/libs/kub.jar \
-     de.mbe1224.utils.kafka.infrastructure.cli.KafkaReadyCommand \
+     de.mbe1224.utils.infrastructure.cli.KafkaReadyCommand \
      3 \
      30000 \
      -z localhost:11117 \

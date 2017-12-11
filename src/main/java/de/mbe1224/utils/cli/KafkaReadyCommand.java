@@ -1,6 +1,6 @@
-package de.mbe1224.utils.kafka.cli;
+package de.mbe1224.utils.cli;
 
-import de.mbe1224.utils.kafka.ClusterStatus;
+import de.mbe1224.utils.ClusterStatus;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
@@ -26,9 +26,9 @@ import static net.sourceforge.argparse4j.impl.Arguments.store;
  * (<bootstrap-brokers> or <zookeeper-connect>) : Either a bootstrap broker list or ZooKeeper connection string
  * <security-protocol>                          : Security protocol to use to connect to the broker.
  */
-public class KafkaBaseReadyCommand {
+public class KafkaReadyCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaBaseReadyCommand.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaReadyCommand.class);
     private static final String KAFKA_READY = "kafka-ready";
     private static final String MIN_EXPECTED_BROKERS = "min-expected-brokers";
     private static final String ZOOKEEPER_CONNECT = "zookeeper-connect";
@@ -129,7 +129,7 @@ public class KafkaBaseReadyCommand {
             }
 
         } catch (ArgumentParserException e) {
-            success = BaseReadyCommand.handleParserExcepiton(args, parser, e);
+            success = BaseCliCommand.handleParserExcepiton(args, parser, e);
         } catch (Exception e) {
             LOGGER.error("Error while running {}: {}", KAFKA_READY, e.getMessage());
             success = false;

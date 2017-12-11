@@ -1,4 +1,4 @@
-package de.mbe1224.utils.kafka;
+package de.mbe1224.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
