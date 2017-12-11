@@ -19,7 +19,7 @@ apply plugin: "org.junit.platform.gradle.plugin"
 apply plugin: "com.github.johnrengelman.shadow"
 
 group "de.mbe1224.utils.kafka"
-version "1.0.0"
+version "0.11.0.0"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -34,12 +34,13 @@ ext {
     apiguardianVersion = "1.0.0"
     argparse4jVersion = "0.8.1"
     bcpkixVersion = "1.58"
+    commonsIOVersion = "2.6"
     gsonVersion = "2.8.2"
     jacksonVersion = "2.9.3"
     junit4Version = "4.12"
     junitJupiterVersion = "5.0.2"
     junitVintageVersion = "4.12.2"
-    kafkaVersion = "1.0.0"
+    kafkaVersion = "0.11.0.0"
     mockitoVersion = "2.13.0"
     scalaVersion = "2.11"
     slf4jVersion = "1.7.25"
@@ -57,6 +58,7 @@ dependencies {
     compile("org.apache.kafka:kafka_${scalaVersion}:${kafkaVersion}")
     compile("org.apache.zookeeper:zookeeper:${zookeeperVersion}")
     compile("org.slf4j:slf4j-api:${slf4jVersion}")
+    testCompile("commons-io:commons-io:${commonsIOVersion}")
     testCompile("junit:junit:${junit4Version}")
     testCompile("org.apache.directory.api:api-ldap-codec-standalone:${apachedaVersion}")
     testCompile("org.apache.directory.server:apacheds-core-api:${apachedsVersion}")
