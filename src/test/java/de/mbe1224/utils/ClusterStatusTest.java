@@ -2,7 +2,7 @@ package de.mbe1224.utils;
 
 import de.mbe1224.utils.infrastructure.EmbeddedKafkaCluster;
 import org.apache.kafka.clients.CommonClientConfigs;
-import org.apache.kafka.common.security.auth.SecurityProtocol;
+import org.apache.kafka.common.protocol.SecurityProtocol;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
