@@ -1,4 +1,4 @@
-package de.mbe1224.utils.kafka.infrastructure;
+package de.mbe1224.utils.infrastructure;
 
 import org.apache.zookeeper.client.FourLetterWordMain;
 import org.apache.zookeeper.server.quorum.Election;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * This class is based on code from Apache Zookeeper unit tests listed below.
+ * Based on code from Apache Zookeeper unit tests listed below.
  *
  * src/java/test/org/apache/zookeeper/test/ClientBase.java
  * src/java/test/org/apache/zookeeper/test/SaslClientTest.java
