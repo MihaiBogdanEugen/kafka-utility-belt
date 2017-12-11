@@ -50,7 +50,7 @@ ext {
 dependencies {
     compile("com.101tec:zkclient:${zookeeperClientVersion}")
     compile("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonVersion}")
-    compile("com.fasterxml.jackson.dataformat:jackson-databind:${jacksonVersion}")
+    compile("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
     compile("com.google.code.gson:gson:${gsonVersion}")
     compile("net.sourceforge.argparse4j:argparse4j:${argparse4jVersion}")
     compile("org.apache.kafka:kafka-clients:${kafkaVersion}")
